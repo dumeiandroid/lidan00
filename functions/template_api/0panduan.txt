@@ -1,0 +1,121 @@
+Ya betul! Karena di file Anda ada **2 bucket** (`MY_BUCKET` dan `LIDAN_BUCKET`). Jadi semua langkah dilakukan 2 kali. Saya buatkan panduan lengkapnya.
+
+---
+
+# Panduan Lengkap Setup 2 R2 Bucket di Cloudflare
+
+---
+
+## LANGKAH 1 — Buat 2 R2 Bucket
+
+1. Login ke **dash.cloudflare.com**
+2. Menu kiri klik **R2 Object Storage**
+3. Klik **Create bucket**
+4. Isi **Bucket name** → `my-bucket` → klik **Create bucket**
+5. Klik **Create bucket** lagi
+6. Isi **Bucket name** → `lidan-bucket` → klik **Create bucket**
+
+✅ Sekarang ada 2 bucket di daftar
+
+---
+
+## LANGKAH 2 — Setup Custom Domain untuk Bucket 1 (MY_BUCKET)
+
+1. Klik bucket **my-bucket**
+2. Klik tab **Settings**
+3. Scroll ke **Public access** → **Custom Domains**
+4. Klik **Connect Domain**
+5. Masukkan domain → contoh: `img.namadomain.com`
+6. Klik **Continue** → **Connect Domain**
+
+✅ **Catat:** `img.namadomain.com` → ini **`aaa_public_domain`** untuk file:
+- `r2_api.js`
+- `upload_r2.js`
+
+---
+
+## LANGKAH 3 — Setup Custom Domain untuk Bucket 2 (LIDAN_BUCKET)
+
+1. Kembali ke daftar bucket → klik **lidan-bucket**
+2. Klik tab **Settings**
+3. Scroll ke **Public access** → **Custom Domains**
+4. Klik **Connect Domain**
+5. Masukkan domain → contoh: `assets.namadomain.com`
+6. Klik **Continue** → **Connect Domain**
+
+✅ **Catat:** `assets.namadomain.com` → ini **`aaa_public_domain`** untuk file:
+- `r2_api_hierarki.js`
+- `r2_api_lidan.js`
+- `upload_r2_lidan.js`
+
+---
+Bisa dilewati buat hanya ketika r2 ingin diakses dari luar cloudflare
+## LANGKAH 4 — Buat API Token (lakukan sekali saja, berlaku untuk semua bucket)
+
+1. Kembali ke halaman utama **R2 Object Storage**
+2. Klik **Manage R2 API Tokens**
+3. Klik **Create API Token**
+4. Isi nama token → bebas, contoh: `my-r2-token`
+5. Permissions → pilih **Object Read & Write**
+6. Bucket → pilih **All buckets** (berlaku untuk my-bucket dan lidan-bucket sekaligus)
+7. Klik **Create API Token**
+8. **Segera catat keduanya:**
+   - **Access Key ID** → `xxxxxxxxxxxx`
+   - **Secret Access Key** → `xxxxxxxxxxxx` ⚠️ **HANYA MUNCUL SEKALI, TIDAK BISA DILIHAT LAGI!**
+9. Klik **Done**
+
+✅ Simpan di notepad atau password manager
+
+---
+
+## LANGKAH 5 — Buat Cloudflare Pages Project
+
+1. Menu kiri klik **Workers & Pages**
+2. Klik **Create** → tab **Pages**
+3. Pilih **Connect to Git** (dari GitHub) atau **Direct Upload**
+4. Ikuti wizard sampai project selesai dibuat
+
+---
+
+## LANGKAH 6 — Binding 2 Bucket ke Pages Project
+
+1. Masuk ke Pages project Anda
+2. Klik **Settings** → **Bindings**
+3. Klik **Add** → pilih **R2 Bucket**
+4. Isi:
+   - **Variable name** → `MY_BUCKET`
+   - **R2 Bucket** → pilih `my-bucket`
+5. Klik **Save**
+6. Klik **Add** lagi → pilih **R2 Bucket**
+7. Isi:
+   - **Variable name** → `LIDAN_BUCKET`
+   - **R2 Bucket** → pilih `lidan-bucket`
+8. Klik **Save**
+9. **Redeploy** project agar kedua binding aktif
+
+---
+
+## LANGKAH 7 — Pasang Kode Template
+
+**Untuk file yang pakai MY_BUCKET** (`r2_api.js`, `rename_r2.js`, `upload_r2.js`):
+- Sublime → Replace All `aaa_public_domain` → `img.namadomain.com`
+
+**Untuk file yang pakai LIDAN_BUCKET** (`r2_api_hierarki.js`, `r2_api_lidan.js`, `upload_r2_lidan.js`):
+- Sublime → Replace All `aaa_public_domain` → `assets.namadomain.com`
+
+Upload semua ke folder `functions/api/` di project Pages Anda.
+
+---
+
+## Ringkasan Catatan Penting
+
+| Yang dicatat | Nilai contoh | Dipakai untuk |
+|---|---|---|
+| Nama bucket 1 | `my-bucket` | Referensi di dashboard |
+| Nama bucket 2 | `lidan-bucket` | Referensi di dashboard |
+| Custom domain bucket 1 | `img.namadomain.com` | Ganti `aaa_public_domain` di `r2_api.js`, `upload_r2.js` |
+| Custom domain bucket 2 | `assets.namadomain.com` | Ganti `aaa_public_domain` di file lidan |
+| Access Key ID | `xxxx` | S3 SDK / rclone / Cyberduck |
+| Secret Access Key | `xxxx` ⚠️ | S3 SDK / rclone / Cyberduck — simpan selamanya! |
+| Variable name 1 | `MY_BUCKET` | Sudah ada di kode, tidak perlu diganti |
+| Variable name 2 | `LIDAN_BUCKET` | Sudah ada di kode, tidak perlu diganti |
