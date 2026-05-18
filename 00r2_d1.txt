@@ -1,0 +1,8 @@
+file.tabi.my.id
+file.mobeli.my.id
+file.talentmap.my.id
+assets.lidan.co.id & fam.cipta.my.id
+asset.ciptapersada.my.id
+assets.mysupplier.my.id
+assets.goblast.my.id
+assets.indahabadi.my.id
