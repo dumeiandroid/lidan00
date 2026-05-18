@@ -6,3 +6,4 @@ asset.ciptapersada.my.id
 assets.mysupplier.my.id
 assets.goblast.my.id
 assets.indahabadi.my.id
+ok
